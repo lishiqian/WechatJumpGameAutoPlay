@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class AndroidUtil {
     private static final Logger logger = LogManager.getLogger(AndroidUtil.class);
-    private static double rate = 1.5;
+    private static double rate = 1.45;
 
     public static void exec(String cmd) throws IOException {
         logger.info("cmd:" + cmd);
@@ -22,7 +22,6 @@ public class AndroidUtil {
     }
 
 
-    //截屏将图片保存到相应位置
     public static void getScreehot(String filepath) {
         try {
             exec("adb shell /system/bin/screencap -p /sdcard/screenshot.png");
@@ -38,16 +37,7 @@ public class AndroidUtil {
         }
     }
 
-    //长按屏幕
-    public static void swipeScree(int interval){
-        try {
-            exec("adb shell input swipe 500 500 500 500 " + interval);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static int scanPic(File pic) throws Exception {
+    private static String scanPic(File pic) throws Exception {
         BufferedImage bi = ImageIO.read(pic);
         //获取图像的宽度和高度
         int width = bi.getWidth();
@@ -104,10 +94,10 @@ public class AndroidUtil {
             int x = width / 2, y = height * 3 / 4, z = 9 * height / 10, i = y;//获取开始按钮位置，自动重新开始
             while( (i+=20) < z) if (bi.getRGB(x, i) == -1 && bi.getRGB(x + 20, i + 20) == -1) break;
             if (i == y-20 || i == z) throw new Exception("scan error:game not start");
-            return 100;
+            return x + " " + i + " " + x  + " " + i + " 100";
         }
         if (distance < 150) distance = 150;
-        return (int) (distance * rate);
+        return x1 + " " + y1 + " " + x2 + " " + y2 + " " + (int) (distance * rate);
     }
 
     private static boolean colorDiff(int c1, int c2){
@@ -120,10 +110,11 @@ public class AndroidUtil {
     public static void main(String[] args) throws Exception {
         logger.info("start game.....");
         while (true) {
+            logger.info("---------------------------");
             getScreehot("D:/screenshot");
-            int interval = scanPic(new File("D:/screenshot/screenshot.png"));
-            swipeScree(interval);
-            Thread.sleep(2000 + Math.round(10) * 200 + Math.round(100));
+            String swipeArg = scanPic(new File("D:/screenshot/screenshot.png"));
+            exec("adb shell input swipe " + swipeArg);
+            Thread.sleep(Math.round(3000) + 1000);
         }
     }
 
