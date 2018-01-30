@@ -123,7 +123,7 @@ public class AndroidUtil {
             getScreehot("D:/screenshot");
             int interval = scanPic(new File("D:/screenshot/screenshot.png"));
             swipeScree(interval);
-            Thread.sleep(2000);
+            Thread.sleep(2000 + Math.round(10) * 200 + Math.round(100));
         }
     }
 
