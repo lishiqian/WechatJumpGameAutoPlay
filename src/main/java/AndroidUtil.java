@@ -22,6 +22,7 @@ public class AndroidUtil {
     }
 
 
+    //截屏手机并获取内容
     public static void getScreehot(String filepath) {
         try {
             exec("adb shell /system/bin/screencap -p /sdcard/screenshot.png");
